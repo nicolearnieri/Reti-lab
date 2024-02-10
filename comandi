@@ -1,0 +1,253 @@
+1. ping 
+ping viene utilizzato per verificare la connettività di rete tra due host, uno locale e uno remoto (selezionato tramite indirizzo IP o nome di dominio).
+Eseguendo un ping, il sistema invia una serie di pacchetti ICMP (Internet Control Message Protocol) al sistema di destinazione. Se il sistema di destinazione è in grado di ricevere i pacchetti, invierà un pacchetto di risposta. Il comando ping visualizzerà quindi il tempo impiegato per inviare e ricevere i pacchetti, nonché il numero di pacchetti persi durante il processo. Quindi calcola le latenze di trasmissione.
+
+struttura:  ping [opzioni] destinazione 
+esempio:    ping 8.8.8.8
+
+Alcune opzioni:
+-c count: invia count pacchetti , di default 4.                                 ping -c 5 8.8.8.8       invia 5 pacchetti a 8.8.8.8
+-i interval: intervallo di tempo tra i pacchetti, di default 1 secondo.         ping -i 2 indirizzo     invia pacchetti ogni 2 secondi
+-ttl: tempo di vita del pacchetto, di default 64.                               ping -ttl 128           invia pacchetti con ttl 128. ttl sta per time to live
+-q: mostra solo il risultato finale.                                            ping -q                 mostra solo il risultato finale
+-w deadline: tempo massimo di attesa per la risposta, default 10 secondi.       ping -w 5               aspetta 5 secondi per la risposta, poi termina
+
+
+
+
+
+2. ifconfig
+ifconfig (interface configuration) è un comando di configurazione di rete in Unix e sistemi Unix-like. Viene utilizzato per visualizzare e configurare le interfacce di rete del sistema. Ha molte impostazioni, per disattivare o attivare le schede di rete, configurare indirizzi IP, impostare il gateway predefinito, ecc.
+
+struttura:  ifconfig [opzioni] [interfaccia]
+esempio:    ifconfig eth0
+
+Alcune opzioni:
+nessuna opzione: mostra tutte le interfacce di rete attive.                      ifconfig               mostra tutte le interfacce di rete attive (up)
+-a: mostra tutte le interfacce, anche quelle non attive.                         ifconfig -a            mostra tutte le interfacce, anche quelle non attive (up e down)
+up: attiva l'interfaccia.                                                        ifconfig eth0 up       attiva l'interfaccia eth0
+down: disattiva l'interfaccia.                                                   ifconfig eth0 down     disattiva l'interfaccia eth0
+
+
+Nota 1: Se una scheda di rete non ha nessun ip, capiamo che la scheda è disattivata.
+Nota 2: ifconfig è stato deprecato in molti sistemi Linux e sostituito da ip.
+
+
+
+2. ip
+Come ifconfig, ma più moderno e completo. Viene utilizzato per visualizzare e configurare le interfacce di rete del sistema.
+
+struttura:  ip [opzioni] [comando] [interfaccia]
+esempio:    ip addr show
+
+Alcune opzioni:
+addr: mostra gli indirizzi IP.                                                   ip addr show           mostra gli indirizzi IP
+a: mostra gli indirizzi IP, come addr.                                           ip a                   mostra gli indirizzi IP
+link: mostra le interfacce di rete.                                              ip link show           mostra le interfacce di rete
+
+Alcuni comandi:
+ip a / ip addr           Mostra gli indirizzi ip di tutte le interfacce di rete, attive e non attive (up e down). Mostrerà "state DOWN" e a volte "state UP" (implicito).
+ip link ls up            Mostra le interfacce di rete attive (up). ls sta per list.
+ip a show eth0           Mostra la configurazione dell'interfaccia eth0.
+ip a add ip/m dev et     Aggiunge un indirizzo IP (ip) e una subnet mask (m) all'interfaccia (et).      ES: ip a add 10.0.0.1/24 dev eth0
+ip a del ip/m dev et     Rimuove un indirizzo IP (ip) e una subnet mask (m) dall'interfaccia (et).      ES: ip a del 10.0.0.1/24 dev eth0
+
+
+
+
+3. netstat/ss
+netstat (network statistics) è un comando diagnostico per visualizzare le connessioni di rete, le tabelle di routing, le statistiche delle interfacce, ecc. In generale, viene usato per visualizzare lo stato delle connessioni di rete instaurate sul computer su cui viene eseguito. ss (socket statistics) è un comando simile a netstat, ma più moderno e completo; è la nuova versione di netstat.
+
+struttura:  netstat [opzioni]
+esempio:    netstat -tupan
+
+Alcune opzioni:
+-t: mostra le connessioni TCP.                                                    netstat -t             mostra le connessioni TCP
+-u: mostra le connessioni UDP.                                                    netstat -u             mostra le connessioni UDP
+-p: mostra PID enome del programma che ha aperto la connessione.                  netstat -p             mostra PID e nome del programma che ha aperto la connessione
+-a: mostra lo stato di tutti i socket                                             netstat -a             mostra tutte le connessioni
+-n: mostra gli indirizzi IP e le porte in formato numerico.                       netstat -n             mostra gli indirizzi IP e le porte in formato numerico
+-l: mostra solo le connessioni in ascolto.                                        netstat -l             mostra solo le connessioni in ascolto
+-e: mostra le statistiche delle interfacce di rete.                               netstat -e             mostra le statistiche delle interfacce di rete
+nessuna opzione: mostra i socket aperti, non quelli dei processi dei server.      netstat                mostra tutte le connessioni
+-tupan: mostra le connessioni di tutte le socket, in protocollo TCP e UDP, mostrando anche PID e nome del programma, in formato numerico. n sta per numerico.  
+                                                                                  netstat -tupan         mostra le connessioni TCP e UDP, con PID e nome del programma
+
+
+
+
+4. telnet
+telnet è un protocollo di rete che consente di stabilire una connessione remota con un altro sistema su Internet o in una rete locale. Il protocollo Telnet funziona su TCP/IP e consente di eseguire comandi su un host remoto. Viene utilizzato per testare la connettività di rete e per accedere a un server remoto o a un dispositivo di rete. Sostanzialmente si crea una sessione di login remoto. Può comunicare usando diversi protocolli, come HTTP, SMTP, ecc.
+
+struttura:  telnet <host> <porta>
+esempio:    telnet google.it 80             si connette a google.it sulla sua porta 80, la porta di default di HTTP.
+            telnet ml.mat.unical.it 25      si connette a ml.mat.unical.it sulla sua porta 25, la porta di default di SMTP. Si può inviare una mail da qui.
+
+Nota: telnet è stato deprecato in molti sistemi Linux e sostituito da ssh.
+
+
+
+
+5 netcat
+netcat 
+ è un'utilità di rete che legge e scrive dati tramite connessioni di rete, usando il protocollo TCP o UDP. È anche un ottimo strumento per inviare file e dati tra due host. Lo si può usare per scansione di porte, trasferimento di file, chat, ecc.
+
+struttura:  nc [opzioni] [destination] [porta]
+Esempio: nc -l 1234                        si mette in ascolto sulla porta 1234
+       
+Alcune opzioni:
+-l: mette in ascolto sulla porta specificata, avvia un socket server in ascolto.                      nc -l 1234             si mette in ascolto sulla porta 1234
+localhost port: avvia un socket client connesso in localhost su port.                                 nc localhost 1234      si connette al server sulla porta 1234
+-v: mostra informazioni dettagliate.                                                                  nc -v localhost 1234   si connette al server sulla porta 1234
+-n: non risolve i nomi di dominio.                                                                    nc -n localhost 1234   si connette al server sulla porta 1234
+-z: scansiona le porte, senza inviare dati.                                                            nc -z localhost 1234   scansiona la porta 1234
+-w: tempo massimo di attesa per la connessione, di default 10 secondi.                                nc -w 5 localhost 1234 aspetta 5 secondi per la connessione
+
+
+
+
+6. ethtool
+ethtool (Ethernet Tool) è un comando diagnostico per visualizzare e modificare le impostazioni delle schede di rete. Viene utilizzato per visualizzare tutte le impostazioni e i parametri della scheda di rete, come la velocità, il duplex, il controllo di flusso, ecc. Può anche essere utilizzato per modificare le impostazioni della scheda di rete.
+
+struttura:  ethtool [opzioni] interfaccia
+esempio:    ethtool eth0                mostra le impostazioni (le proprietà) della scheda di rete eth0
+
+Alcune opzioni:
+-s: imposta la velocità della scheda di rete.                    ethtool -s eth0 speed 100 autoneg off          velocità a 100 Mbps, negoziazione automatica off
+-S: mostra le statistiche della scheda di rete.                  ethtool -S eth0                                mostra le statistiche della scheda di rete
+-i: mostra i driver della scheda di rete.                        ethtool -i eth0                                mostra i driver della scheda di rete
+-a: mostra le impostazioni abilitate della scheda di rete.       ethtool -a eth0                                mostrai settaggi di RX e TX, l'autonegazione, di eth0
+
+Nota per driver della scheda di rete si intendono i driver del kernel Linux, cioè i moduli del kernel che gestiscono la scheda di rete.
+
+
+
+
+7. dig / nslookup
+dig (domain information groper) e nslookup (name server lookup) sono comandi diagnostici per interrogare i server DNS. Sono utilizzati per ottenere informazioni sui record DNS di un dominio, come gli indirizzi IP associati a un nome di dominio, i record MX, i record NS, ecc. Sono utilizzati per risolvere i nomi di dominio in indirizzi IP e viceversa.
+
+NSLOOKUP
+struttura: nslookup [opzioni] [server]
+esempio:   nslookup google.it
+
+Alcune opzioni:
+server: specifica il server DNS da interrogare.                   nslookup www.mat.unical.it            interroga il server DNS di default per risolvere mat.unical.it
+-type: specifica il tipo di record DNS da cercare.                nslookup -type=mx google.it           cerca i record MX di google.it, trova i server mail di google.it
+
+Nota: MX sta per Mail Exchange, è un record DNS che specifica il server di posta elettronica responsabile per un determinato dominio.
+      Altri tipi di record DNS sono A (indirizzo IP), AAAA (indirizzo IP IPv6), CNAME (nome canonico), PTR (puntatore), ecc.
+    - Se non si specifica il tipo di record, nslookup cercherà i record A (indirizzo IP) di default.
+
+
+DIG
+dig mostra molte più informazioni rispetto a nslookup, come il tempo di risoluzione, il tempo di trasmissione, il tempo di risposta, ecc. È più completo e moderno di nslookup. Inoltre fa ciò senza uso di opzioni.
+
+struttura: dig [opzioni] [dominio]
+
+dig www.mat.unical.it         cerca gli indirizzi IP di www.mat.unical.it effettuando un'interrogazione DNS
+
+
+
+
+8.iperf
+iperf  (Internet Protocol Performance) è un comando diagnostico per testare le prestazioni della rete, come la velocità di trasferimento dei dati, la latenza, la perdita di pacchetti, ecc. È utile per testare la velocità di trasferimento di rete tra due host, come tra un server e un client. 
+
+Tra server e client viene spedito un pacchetto, vedremo il tempo impiegato e la grandezza del pacchetto.
+
+struttura: iperf  [server|client, -s|-c] [opzioni] [indirizzo host]
+esempio:   iperf -s                         avvia il server in ascolto di un client per misurare la banda (cioè la velocità di trasferimento dei dati)
+           iperf -c localhost *porta*       avvia una connessione client per misurare la banda con il server in localhost.
+    Utile per capire se c'è un problema di bottleneck nella rete, se la velocità di trasferimento è bassa, se ci sono problemi di latenza, ecc.
+
+
+
+
+9. tcpdump 
+tcpdump è un comando diagnostico per catturare e analizzare il traffico di rete. Viene utilizzato per catturare e visualizzare i pacchetti di rete trasmessi e ricevuti attraverso la rete su cui l'host è connesso. È utile per analizzare il traffico di rete, risolvere i problemi di rete, monitorare il traffico di rete, ecc.
+
+struttura: tcpdump [opzioni]
+senza opzioni cattura tantissimi pacchetti e li mostra, meglio specificare un filtro.
+
+Alcune opzioni:
+-i: specifica l'interfaccia di rete da cui catturare i pacchetti.               tcpdump -i eth0         cattura i pacchetti dall'interfaccia di rete eth0
+-n: mostra gli indirizzi IP e le porte in formato numerico.                     tcpdump -n              mostra gli indirizzi IP e le porte in formato numerico
+-nn: non risolve i nomi di dominio e le porte.                                  tcpdump -nn             mostra gli indirizzi IP e le porte in formato numerico
+nota: -n e -nn sono simili, ma -nn non risolve i nomi di dominio e le porte, quindi non viene effettuata nessuna traduzione, mentre -n mostra gli indirizzi IP e le porte in formato numerico, ma effettua la traduzione dei nomi di dominio. 
+-X: mostra i dati in formato esadecimale.                                       tcpdump -X              mostra i dati in formato esadecimale
+-v,-vv,-vvv: mostra informazioni dettagliate (aumenta la verbosità).            tcpdump -vv             mostra informazioni sempre più dettagliate
+-c : specifica il numero di pacchetti da catturare.                             tcpdump -c 5            cattura 5 pacchetti
+-w: salva i pacchetti catturati in un file.                                     tcpdump -w file.pcap    salva i pacchetti catturati in un file chiamato file.pcap
+-S: stampa la sequenza di numeri assoluti dei pacchetti.                        tcpdump -S              stampa la sequenza di numeri assoluti 
+-e: mostra le informazioni dell'header Ethernet.                                tcpdump -e              mostra le informazioni dell'header Ethernet
+-q: mostra poche informazioni sui pacchetti.                                    tcpdump -q              mostra meno informazioni
+-f: non mette il processo in background.                                        tcpdump -f              non mette il processo in background
+-s: specifica la grandezza massima dei pacchetti da catturare.                  tcpdump -s 100          cattura i primi 100 byte dei pacchetti
+
+
+
+10. route
+route è un comando diagnostico per visualizzare e modificare la tabella di routing del kernel. Viene utilizzato per visualizzare e modificare le rotte di rete, le tabelle di routing, i gateway predefiniti, ecc.
+
+struttura: route [opzioni]
+esempio:   route -n
+
+Alcune opzioni:
+nulla: mostra la routing table dell'host.                                        route                  mostra la routing table.
+-n: mostra gli indirizzi IP in formato numerico.                                 route -n               mostra la routing table con address numerici.
+-e : mostra le informazioni dettagliate, usa il formato netstat                  route -e               mostra le informazioni dettagliate.
+
+add  per aggiungere nuove rotte alla tabella di routing, del per eliminare rotte.
+esempio: route add -net 10.0.1.0 netmask 255.255.255.0 gw 10.0.0.1 dev eth0        significa che il network di destinazione è 10.0.1.0/24, il gateway è 10.0.0.1 (sarebbe il prossimo hop), e l'interfaccia di rete (device) tramite cui i dati vanno in output è eth0.
+
+
+
+
+
+11. traceroute
+traceroute si occupa di tracciare il percorso dei pacchetti di rete da un host a un altro. Viene utilizzato per visualizzare il percorso dei pacchetti di rete attraverso la rete, mostrando tutti i router attraverso cui passano i pacchetti. È utile per risolvere i problemi di rete, trovare i router intermedi, misurare la latenza, ecc.
+Ciò viene effettuato grazie al ttl (time to live) dei pacchetti, che viene decrementato ad ogni router, e quando arriva a 0, il pacchetto viene scartato e il router invia un pacchetto di errore.
+Normalmente usa il protocollo ICMP, ma può usare anche il protocollo TCP.
+
+struttura: traceroute [opzioni] address
+esempio:   traceroute www.mat.unical.it         traccia le rotte seguite dai pacchetti per raggiungere www.mat.unical.it (fino a questo host)
+
+Alcune opzioni:
+-n: mostra gli IP in formato numerico, disabilita il mapping di address e nome di dominio.          traceroute -n www.mat.unical.it
+-T: usa il protocollo TCP invece di ICMP.                                                           traceroute -T www.mat.unical.it
+
+
+Se compaiono degli asterischi, significa che il pacchetto è stato scartato, e non è arrivato a destinazione. Questo può essere dovuto a un firewall, a un router che non risponde, ecc. Il pacchetto viene inviato tre volte, e se non arriva a destinazione, viene scartato; ho tre asterischi quindi. Se sono di meno, potrebbe essere un problema di packet loss.
+
+
+
+
+12. arp
+arp (Address Resolution Protocol) è un comando diagnostico per visualizzare e modificare la tabella ARP del kernel. 
+La tabella ARP mappa gli indirizzi IP degli host con i loro indirizzi MAC. È in tutti i dispositivi di rete (perché è un protocollo di livello 2, quindi è indipendente dal protocollo di rete usato, come IP, IPv6, ecc.). Viene utilizzato per risolvere gli indirizzi IP in indirizzi MAC e viceversa.
+"staticamente": possiamo aggiungere e rimuovere nuove entries nella tabella manualmente.
+
+struttura: arp [opzioni]
+
+Alcune opzioni:
+Nessuna opzione: mostra la tabella ARP dell'host.                                            arp -a               mostra la tabella ARP
+-s: aggiunge una nuova entry statica nella tabella ARP.                                      arp -s hostname      aggiunge una nuova entry statica nella tabella ARP
+-d: rimuove una entry dalla tabella ARP.                                                     arp -d hostname      rimuove una entry dalla tabella ARP
+-n: mostra gli indirizzi IP e MAC in formato numerico.                                       arp -n               mostra gli indirizzi IP e MAC in formato numerico
+
+
+Flag C sta per complete, indica che l'indirizzo MAC è stato risolto.
+
+Arp è pericoloso, perché può essere usato per fare attacchi di tipo ARP spoofing (c'è qualche host che impersona qualcun'altro, MAC o IP falsati, in modo da ottenere pacchetti che non lo riguardano), quindi è meglio non usarlo in reti non sicure. 
+
+
+
+13. iftop
+Per ogni scheda di rete analizza il traffico su una specifica interfaccia, consente di visualizzarlo e di fare analisi calcolando l'utilizzo della banda corrente da parte di una coppia di host. Nota: non è accurato se si usano pochi byte di traffico.
+
+struttura: iftop [opzioni]
+nessuna opzione: mostra il traffico di rete e le statistiche sulla banda in tempo reale.                                    iftop         
+-p : mostra l'uso della banda in modo promiscuo (tutto il traffico, non solo quello verso l'host).                          iftop -p
+-nN: mostra gli indirizzi IP e le porte in formato numerico, non li risolve.                                                iftop -nN
+
+Se si vuole vedere il traffico di una specifica interfaccia, si può usare l'opzione -i, seguita dal nome dell'interfaccia. Se non si specifica l'interfaccia, iftop mostra il traffico di tutte le interfacce di rete.
+
