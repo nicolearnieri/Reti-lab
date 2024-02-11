@@ -1,1 +1,39 @@
-ciaooo
+I parametri che possiamo vedere in wireshark sono:
+
+- **Source IP**: Indirizzo IP del mittente
+- **Destination IP**: Indirizzo IP del destinatario
+- **Protocol**: Protocollo utilizzato
+- **Length**: Lunghezza del pacchetto
+- **Info**: Informazioni sul pacchetto
+
+In info possiamo vedere il tipo di pacchetto, ad esempio se è un pacchetto di richiesta HTTP, un pacchetto di risposta HTTP, un pacchetto di richiesta DNS, un pacchetto di risposta DNS, ecc.
+Alcune flag che possiamo vedere in info sono:
+syn = pacchetto di sincronizzazione, cioè un pacchetto di richiesta di connessione: vogliamo iniziare un dialogo con il destinatario
+ack = pacchetto di risposta di connessione, cioè un pacchetto di accettazione di connessione
+fin = pacchetto di chiusura di connessione, cioè un pacchetto di richiesta di chiusura di connessione
+rst = pacchetto di reset di connessione, cioè un pacchetto di rifiuto di connessione
+http = pacchetto di richiesta o risposta HTTP
+dns = pacchetto di richiesta o risposta DNS
+e così via
+
+Il campo win in info indica la finestra di congestione, cioè la quantità di dati che il mittente può inviare senza ricevere una risposta dal destinatario. Questo valore è importante per la gestione della congestione della rete.
+il campo seq in info indica il numero di sequenza del pacchetto, cioè il numero di sequenza del primo byte del pacchetto. 
+Il campo len in info indica la lunghezza del pacchetto, cioè la quantità di dati contenuti nel pacchetto.
+Il campo MSS in info indica la massima dimensione del segmento, cioè la dimensione massima del pacchetto che il mittente può inviare al destinatario.
+Il campo TSV in info indica il TimeStampValue del pacchetto, cioè il tempo in cui il pacchetto è stato inviato.
+
+Quando vengono settate due flag, ad esempio syn e ack, significa che il pacchetto è sia di richiesta di connessione che di accettazione di connessione. Questo significa che il mittente vuole iniziare un dialogo con il destinatario e il destinatario accetta la richiesta di dialogo. Questo è il primo passo per stabilire una connessione tra mittente e destinatario.
+In sostanza: ACK = 1 significa che il destinatario ha accettato la richiesta di connessione del mittente, questa èla risposta.
+             SYN = 1 significa che il mittente (del pacchetto) vuole iniziare un dialogo con il destinatario, questa è la richiesta.
+                SYN = 1 e ACK = 1 significa che il destinatario ha accettato la richiesta di connessione del mittente e sta chiedendo di aprire un canale di comunicazione con il mittente, questa è la risposta.
+
+Il campo ACK valorizzato ci indica a quale comunicazione si riferisce il pacchetto, cioè a quale pacchetto precedente si riferisce il pacchetto corrente. Questo è importante per la gestione della comunicazione tra mittente e destinatario, soprattutto nel caso in cui i pacchetti spezzettati devono essere ricomposti.
+
+
+
+Altre cose che potremmo avere sono ad esempio il tipo di richiesta HTTP, cioè potremmo vedere in Info se è una richiesta GET, POST, PUT, DELETE, ecc.
+Inoltre, potremmo vedere il tipo di risposta HTTP, cioè potremmo vedere in Info se è una risposta 200 OK, 404 Not Found, 500 Internal Server Error, ecc.
+
+Potremmo vedere il tipo di richiesta DNS, cioè potremmo vedere in Info se è una richiesta di tipo A, AAAA, MX, CNAME, ecc.
+Inoltre, potremmo vedere il tipo di risposta DNS, cioè potremmo vedere in Info se è una risposta di tipo A, AAAA, MX, CNAME, ecc.
+

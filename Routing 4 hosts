@@ -1,0 +1,10 @@
+Per settare i PC:
+in edit config inserire una riga così creata:
+                                ip numeroIpv4 numeroMaschera numeroGateway
+quindi per esempio:
+ip 10.0.0.2 255.255.255.0 10.0.0.1 
+dove 10.0.0.2 è l'indirizzo ip del pc, 255.255.255.0 è la mask e 10.0.0.1 è il gateway, cioè l'hop successivo (il router)
+
+
+Per settare i firewall invece, dobbiamo prima far sì che le loro interfacce siano configurate con gli indirizzi ip giusti, quindi,
+per ciascuna scheda di rete
