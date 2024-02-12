@@ -121,13 +121,50 @@ R1:
     eth3 : 10.0.7.2
 
 
+Nel file /etc/network/interfaces aggiungiamo le rotte:
+
+#Rotta di default verso internet
+post-up route add default gw 10.0.7.1 dev eth3
+
+#Rotta verso l'area GREEN
+post-up route add -net 10.0.6.0/24 gw 10.0.7.1 dev eth3
+
+## internet e green potevano andare insieme 
+
+#Rotta verso l'area RED 
+post-up route add -net 10.0.0.0/22 gw 10.0.7.6 dev eth0
+
+#Rotta verso CD5
+post-up route add -net 10.0.7.8/30 gw 10.0.7.6 dev eth0
+
+_______________________ fine file 
+
+Eseguire il comando : 
+    service networking restart 
+Per verificare le nuove rotte, dopo aver fatto ciò possiamo ri-eseguire anche route -n 
+
+
+
 
 
 PUNTO 4: ROUTER R2
+Mancano le rotte verso l'area GREEN, l'area DMZ, CD2 e CD4
 
 R2:
     eth0 : 10.0.7.10
     eth1 : 10.0.2.1
     eth2 : 10.0.0.1
-    
+
+Nel file /etc/network/interfaces aggiungiamo le rotte:
+
+#Rotta di default, per tutti i punti insieme:
+post-up route add default gw 10.0.7.9 dev eth0
+
+_______________________ fine file 
+
+Eseguire il comando : 
+    service networking restart 
+Per verificare le nuove rotte, dopo aver fatto ciò possiamo ri-eseguire anche route -n 
+
+
 
