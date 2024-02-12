@@ -46,3 +46,13 @@ route add -net 10.0.0.0/21 gw 10.0.7.14 dev tap0
 #aggiunge una rotta di default per l'interfaccia di rete TAP. Questo comando è utile per far sì che i pacchetti in uscita dall'interfaccia di rete TAP siano instradati correttamente.
 
 Andrebbe fatto uno script.sh per automatizzare il tutto, andrebbbe eseguito ogni volta che si riavvia il PC fisico altrimenti. 
+
+CONFIGURAZIONE DEL FILE /etc/hosts
+Per poter utilizzare i nomi di dominio invece degli indirizzi IP, è necessario configurare il file /etc/hosts.
+Aprendo il file /etc/hosts con un editor di testo, aggiungere le seguenti righe:
+F1:
+10.0.7.2 R1   (sarebbe l'ip di eth3 di R1, che "punta" verso F1)
+10.0.7.6 F2
+10.0.7.10 R2
+
+E così via successivamente su R1, F2, R2, ecc. 
