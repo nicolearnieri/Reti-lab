@@ -95,3 +95,95 @@ iptables -A AllToGreen -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A inetToDMZ -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
 
 iptables -A DMZtoInet -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+
+
+#Abilitiamo il port forwarding per il firewall F1, regole di natting 
+
+#Port forwarding della porta 80 sull'indirizzo 10.0.5.3
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j DNAT --to-destination 10.0.5.3
+## -t nat: selezioniamo la tabella (-t) nat
+## -A PREROUTING: aggiungiamo una regola alla catena PREROUTING, prima che il pacchetto venga instradato
+## -i eth0 interfaccia eth0 è l'interfaccia d'ingresso su cui applicare la regola
+## -p tcp: il protocollo di trasporto dei pacchetti
+## --dport è la porta di destinazione dei pacchetti
+## -j DNAT : se la regola corrisponde si salta alla catena DNAT, cioè il pacchetto verrà sottoposto a Destination NATTING 
+## --to-destination ip : ip di destinazione a cui i pacchetti devono essere inoltrati dopo il NAT.
+
+#Port forwarding della porta 4443 sull'indirizzo 10.0.4.2:443
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 4443 -j DNAT --to-destination 10.0.4.2:443
+
+
+
+#Port forwarding della porta 2525 sull'indirizzo 10.0.5.2
+iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 2525 -j DNAT --to-destination 10.0.5.2
+
+
+
+
+fine file.
+
+MA COS'È IL PORT FORWARDING'
+Il port forwarding è una tecnica che consente di instradare il traffico in ingresso su una porta specifica di un indirizzo IP verso un altro indirizzo IP e porta.
+Sostanzialmente mettiamo il router in mezzo tra il mittente e il destinatario, e il router si occupa di fare da intermediario, inoltrando i pacchetti al destinatario: le porte effettivamente aperte sono quelle del router, e non quelle del destinatario (che spesso è un server).
+
+
+
+
+2. CONFIGURAZIONE DEL FIREWALL DI F2
+
+Creare un nuovo file di configurazione per il firewall F2, firewall.sh, e configurare le interfacce e le rotte statiche.
+
+In /etc/network/firewall.sh :
+
+#Ripuliamo le regole e le catene del firewall:
+iptables -F     #Flush delle regole
+iptables -X     #Eliminazione delle catene
+
+#Politica di default da impostare per le catene di default del firewall
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT DROP
+    # -P sta per policy, impostiamo la policy predefinita a drop e non a accept, cioè di default il firewall non accetta nessun pacchetto, a meno che non sia specificato diversamente.
+
+#Abilitazione di SSH in F2 ora: 
+
+iptables -A INPUT -p tcp -i eth0 --sport 22 -j ACCEPT
+
+iptables -A OUTPUT -p tcp -o eth0 --dport 22  -j ACCEPT
+
+#Creazione di sottocatene da agganciare a Forward.
+
+iptables -N greenToAll
+iptables -N allToGreen
+iptables -N DMZToRed
+iptables -N RedToDMZ
+
+iptables -A FORWARD -s 10.0.6.0/24 -i eth0 -j greenToAll
+## Aggiunge una regola che consente al traffico proveniente da 10.0.6.0 (cioè l'area GREEN), in ingresso su F2 tramite eth0 (interfaccia di rete rivolta verso Green) di essere inoltrato a greenToAll. Questo significa che il traffico proveniente da GREEN può andare ovunque.
+
+iptables -A FORWARD -d 10.0.6.0/24 -o eth0 -j allToGreen
+
+iptables -A FORWARD -i eth0 -0 eth1 -s 10.0.4.0/23 -d 10.0.0.0/22 -j DMZToRed
+## consentiamo ad F2 di inoltrare il traffico proveniente da DMZ e diretto a RED, quindi -s (sorgente) 10.0.4.0/23 sull'interfaccia eth0 e diretto a 10.0.0.0/22 tramite eth1, interfaccia di output (rivolta verso RED) a DMZToRed.
+
+iptables -A FORWARD -i eth1 -o eth0 -s 10.0.0.0/22 -d 10.0.4.0/23 -j RedToDMZ
+## consentiamo ad F2 di inoltrare il traffico proveniente da RED e diretto a DMZ, quindi -s (sorgente) 10.0.0.0/22 sull'interfaccia eth1 e diretto a 10.0.4.0/23 tramite eth0, interfaccia di output (rivolta verso DMZ) a RedToDMZ.
+
+#Aggiungiamo le policy di accept alle sottocatene:
+iptables -A greenToAll -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+## equivalente a iptables -A greenToAll -j ACCEPT
+
+iptables -A allToGreen -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+iptables -A DMZToRed -j ACCEPT
+
+iptables -A RedToDMZ -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+#Abilitiamo le echo request da red verso dmz:
+iptables -A redToDMZ -p icmp --icmp-type 8 -j ACCEPT
+## -p icmp --icmp-type 8 indica che stiamo parlando di pacchetti icmp di tipo 8, cioè echo request, cioè richieste di ping. -j ACCEPT indica che i pacchetti icmp di tipo 8 verranno accettati.
+
+#consentiamo le risposte alle echo request da dmz verso red:
+iptables -A DMZToRed -p icmp --icmp-type 0 -j ACCEPT
+## -p icmp --icmp-type 0 indica che stiamo parlando di pacchetti icmp di tipo 0, cioè echo reply, cioè risposte ai ping. -j ACCEPT indica che i pacchetti icmp di tipo 0 verranno accettati.
